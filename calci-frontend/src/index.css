@@ -26,11 +26,66 @@
   --success: #059669;
   --success-bg: #ecfdf5;
   --success-border: #a7f3d0;
+  --input-bg: #ffffff;
+  --row-border: #f3f4f6;
+  --refresh-hover: #ddd6fe;
 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: var(--text);
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #818cf8;
+  --accent-light: rgba(129, 140, 248, 0.15);
+  --accent-hover: #6366f1;
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.1);
+  --danger-border: rgba(248, 113, 113, 0.25);
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.1);
+  --success-border: rgba(52, 211, 153, 0.25);
+  --input-bg: #0f172a;
+  --row-border: #334155;
+  --refresh-hover: rgba(129, 140, 248, 0.25);
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 50px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.theme-toggle .toggle-icon {
+  font-size: 1rem;
+  transition: transform 0.35s ease;
+}
+
+.theme-toggle:hover .toggle-icon {
+  transform: rotate(25deg);
 }
 
 body {
@@ -39,6 +94,7 @@ body {
   display: flex;
   place-items: center;
   justify-content: center;
+  transition: background 0.35s ease, color 0.35s ease;
 }
 
 #root {
