@@ -18,9 +18,6 @@ function App() {
         <History ref={historyRef} />
       </main>
 
-      <footer className="app-footer">
-        Built with React &amp; Spring Boot
-      </footer>
     </div>
   );
 }

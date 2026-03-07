@@ -5,7 +5,15 @@ const OP_SYMBOLS = { ADD: '+', SUBTRACT: '−', MULTIPLY: '×', DIVIDE: '÷' };
 
 function formatDate(ts) {
     if (!ts) return '—';
-    const d = new Date(ts);
+    let d;
+    if (Array.isArray(ts)) {
+        // Java LocalDateTime comes as [year, month, day, hour, minute, second, nano]
+        const [y, mo, day, h = 0, m = 0, s = 0] = ts;
+        d = new Date(y, mo - 1, day, h, m, s);
+    } else {
+        d = new Date(ts);
+    }
+    if (isNaN(d.getTime())) return '—';
     return d.toLocaleString('en-IN', {
         day: '2-digit',
         month: 'short',
@@ -78,7 +86,7 @@ const History = forwardRef(function History(_, ref) {
                                         {r.num1} {OP_SYMBOLS[r.operation] || r.operation} {r.num2}
                                     </td>
                                     <td className="result-cell">{r.result}</td>
-                                    <td className="time-cell">{formatDate(r.timestamp)}</td>
+                                    <td className="time-cell">{formatDate(r.timestamp || r.Timestamp)}</td>
                                 </tr>
                             ))}
                         </tbody>
