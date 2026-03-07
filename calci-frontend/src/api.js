@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://backend-calci.onrender.com',
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 export const calculate = (num1, num2, operation) =>
