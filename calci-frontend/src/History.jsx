@@ -5,7 +5,6 @@ function formatDate(ts) {
     if (!ts) return '—';
     let d;
     if (Array.isArray(ts)) {
-        // Java LocalDateTime comes as [year, month, day, hour, minute, second, nano]
         const [y, mo, day, h = 0, m = 0, s = 0] = ts;
         d = new Date(y, mo - 1, day, h, m, s);
     } else {
@@ -25,7 +24,7 @@ const History = forwardRef(function History(_, ref) {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [visible, setVisible] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const fetchHistory = async () => {
         setLoading(true);
@@ -42,79 +41,98 @@ const History = forwardRef(function History(_, ref) {
 
     useImperativeHandle(ref, () => ({ refresh: fetchHistory }));
 
-    const toggleHistory = async () => {
-        if (!visible) {
-            await fetchHistory();
+    const openModal = async () => {
+        await fetchHistory();
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    // Close modal when clicking the backdrop
+    const handleBackdropClick = (e) => {
+        if (e.target.classList.contains('history-modal-backdrop')) {
+            closeModal();
         }
-        setVisible((prev) => !prev);
     };
 
     return (
-        <div className="history-card">
-            <div className="history-header">
+        <>
+            {/* ─── Trigger button ──────────────────────────────────── */}
+            <div className="history-trigger-card">
                 <h2 className="section-title">
                     <span className="icon">📜</span> History
                 </h2>
-                <div className="history-actions">
-                    <button
-                        id="toggle-history-btn"
-                        className="toggle-history-btn"
-                        onClick={toggleHistory}
-                    >
-                        {visible ? '▲ Hide' : '▼ Show'} History
-                    </button>
-                    {visible && (
-                        <button
-                            id="refresh-btn"
-                            className="refresh-btn"
-                            onClick={fetchHistory}
-                            disabled={loading}
-                        >
-                            {loading ? '⟳' : '↻'} Refresh
-                        </button>
-                    )}
-                </div>
+                <button
+                    id="toggle-history-btn"
+                    className="toggle-history-btn"
+                    onClick={openModal}
+                >
+                    📋 View History
+                </button>
             </div>
 
-            {visible && (
-                <div className="history-body fade-in">
-                    {error && <div className="error-box">{error}</div>}
+            {/* ─── Modal overlay ───────────────────────────────────── */}
+            {modalOpen && (
+                <div className="history-modal-backdrop" onClick={handleBackdropClick}>
+                    <div className="history-modal fade-in">
+                        <div className="history-modal-header">
+                            <h2 className="section-title">
+                                <span className="icon">📜</span> Calculation History
+                            </h2>
+                            <div className="history-modal-actions">
+                                <button
+                                    id="refresh-btn"
+                                    className="refresh-btn"
+                                    onClick={fetchHistory}
+                                    disabled={loading}
+                                >
+                                    {loading ? '⟳' : '↻'} Refresh
+                                </button>
+                                <button
+                                    className="close-modal-btn"
+                                    onClick={closeModal}
+                                    title="Close"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
 
-                    {records.length === 0 && !loading && !error ? (
-                        <p className="empty-msg">No calculations yet. Try one above!</p>
-                    ) : (
-                        <div className="table-wrap">
-                            <table id="history-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Type</th>
-                                        <th>Expression</th>
-                                        <th>Result</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <div className="history-modal-body">
+                            {loading && <div className="loader" />}
+
+                            {error && <div className="error-box">{error}</div>}
+
+                            {!loading && !error && records.length === 0 && (
+                                <p className="empty-msg">No calculations yet. Try one first!</p>
+                            )}
+
+                            {!loading && records.length > 0 && (
+                                <div className="history-list">
                                     {records.map((r, i) => (
-                                        <tr key={i} className="fade-in">
-                                            <td>{i + 1}</td>
-                                            <td>
+                                        <div key={i} className="history-item fade-in">
+                                            <div className="history-item-top">
                                                 <span className={`type-badge ${(r.type || 'SIMPLE').toLowerCase()}`}>
                                                     {r.type || 'SIMPLE'}
                                                 </span>
-                                            </td>
-                                            <td className="expression">{r.expression}</td>
-                                            <td className="result-cell">{r.result}</td>
-                                            <td className="time-cell">{formatDate(r.timestamp)}</td>
-                                        </tr>
+                                                <span className="history-time">{formatDate(r.timestamp)}</span>
+                                            </div>
+                                            <div className="history-item-body">
+                                                <span className="history-expression">{r.expression}</span>
+                                                <span className="history-equals">=</span>
+                                                <span className="history-result">{r.result}</span>
+                                            </div>
+                                        </div>
                                     ))}
-                                </tbody>
-                            </table>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
             )}
-        </div>
+        </>
     );
 });
 
