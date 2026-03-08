@@ -24,7 +24,7 @@ function App() {
     <div className="app-wrapper">
       <header className="app-header">
         <h1>⚡ Calci</h1>
-        <p className="subtitle">A simple full-stack calculator</p>
+        <p className="subtitle">Simple calculations &amp; expression evaluation</p>
         <button
           id="theme-toggle"
           className="theme-toggle"

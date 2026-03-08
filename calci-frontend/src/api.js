@@ -7,4 +7,7 @@ const API = axios.create({
 export const calculate = (num1, num2, operation) =>
   API.post('/calculate', { num1, num2, operation });
 
+export const evaluateExpression = (expression) =>
+  API.post('/evaluate-expression', { expression });
+
 export const getHistory = () => API.get('/history');
